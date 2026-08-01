@@ -1,0 +1,6 @@
+{
+    "default": "data/SPECrate2017_int_base.csv",
+    "files": [
+        "data/SPECrate2017_int_base.csv"
+    ]
+}

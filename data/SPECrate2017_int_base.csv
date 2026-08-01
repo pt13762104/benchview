@@ -1,0 +1,16 @@
+"SPECrate2017 integer base rate-1 Estimated Performance"
+"Default: Fedora 44, GCC 16.x -Ofast -flto, -march as native as possible, jemalloc, 4K page w/ THP"
+Test,Vendor,Launch Date,Class,ISA,500.perlbench,502.gcc,505.mcf,520.omnetpp,523.xalancbmk,525.x264,531.deepsjeng,541.leela,548.exchange2,557.xz,Total,Clock (MHz),Perf/GHz
+7840U,AMD,2023-05,Laptop,AMD64,8.62,9.30,7.84,4.25,12.3,20.5,7.31,6.99,30.3,3.99,9.16,4500,2.035
+10750H,Intel,2020-04,Laptop,AMD64,7.537574,9.636809,8.267186,5.816853,9.29215,16.334982,6.437424,5.638668,21.353046,4.381075,8.424371,5000,1.684874
+Dimensity 9000+ (Cortex-X2),MediaTek,2022-07,Phone,ARM64,6.97,8.83,8.07,3.61,9.55,17.9,5.49,6.67,21.9,3.03,7.71,3350,2.30
+"Dimensity 9000+ (Cortex-A710, mcpu=cortex-x2)",MediaTek,2022-07,Phone,ARM64,5.17,6.47,6.20,2.61,8.06,13.4,4.82,5.65,17.3,2.59,6.11,3200,1.91
+Snapdragon 835 (Cortex-A73),Qualcomm,2016-11,Phone,ARM64,1.78,1.94,1.85,1.08,1.41,4.27,1.54,2.65,5.96,1.18,2.03,2457,0.826
+
+Footnotes
+"Important Notes"
+"Compilers, operating systems, libc, malloc implementations and page size can significantly impact performance and relative positioning of CPU cores."
+"Please refrain from comparing results with other tests that were not conducted under identical conditions or inferring results based on performance improvements observed in other tests. Results for macOS are provided for reference purposes only."
+"Memory and cache configurations have a substantial impact on performance. Please do not compare the performance of different microarchitectures with varying memory and cache configurations."
+" "
+"Results published by me are licensed under public domain."

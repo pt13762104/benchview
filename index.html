@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BenchView</title>
+  <style data-inline-source="css/styles.css">
+:root {
+  color-scheme: light;
+  --single-chart-min-width: 840px;
+  --bg: #fafafa;
+  --surface: #fff;
+  --surface-muted: #f5f5f5;
+  --surface-hover: #f0f0f0;
+  --text: #222;
+  --text-muted: #666;
+  --border: #ddd;
+  --border-soft: #e0e0e0;
+  --grid-border: #e3e3e3;
+  --accent-soft: #fff5cc;
+  --databar: rgba(91, 155, 213, 0.35);
+  --databar-highlight: rgba(255, 200, 50, 0.55);
+  --error-text: #8a1f11;
+  --error-bg: #fff4f1;
+  --error-border: #f0c8bf;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111418;
+    --surface: #181d23;
+    --surface-muted: #202630;
+    --surface-hover: #252c36;
+    --text: #edf1f5;
+    --text-muted: #aeb8c4;
+    --border: #303946;
+    --border-soft: #364151;
+    --grid-border: #2d3642;
+    --accent-soft: #3a3320;
+    --databar: rgba(91, 155, 213, 0.42);
+    --databar-highlight: rgba(255, 200, 50, 0.42);
+    --error-text: #ffd2c7;
+    --error-bg: #3a1d18;
+    --error-border: #6c352a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111418;
+  --surface: #181d23;
+  --surface-muted: #202630;
+  --surface-hover: #252c36;
+  --text: #edf1f5;
+  --text-muted: #aeb8c4;
+  --border: #303946;
+  --border-soft: #364151;
+  --grid-border: #2d3642;
+  --accent-soft: #3a3320;
+  --databar: rgba(91, 155, 213, 0.42);
+  --databar-highlight: rgba(255, 200, 50, 0.42);
+  --error-text: #ffd2c7;
+  --error-bg: #3a1d18;
+  --error-border: #6c352a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.load-error {
+  padding: 16px 24px;
+  color: var(--error-text);
+  background: var(--error-bg);
+  border-bottom: 1px solid var(--error-border);
+}
+.app-header {
+  padding: 16px 24px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.title-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 4px;
+}
+.app-header h1 {
+  font-size: 22px;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.dataset-picker {
+  margin-left: auto;
+}
+.dataset-picker select, .theme-toggle {
+  max-width: min(460px, 100vw - 48px);
+  font-size: 13px;
+  padding: 4px 28px 4px 8px;
+}
+.theme-toggle {
+  flex: 0 0 auto;
+  max-width: none;
+  min-width: 74px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-muted);
+  color: var(--text);
+  cursor: pointer;
+}
+.theme-toggle:hover { background: var(--surface-hover); }
+.theme-toggle:focus-visible {
+  outline: 2px solid #5b9bd5;
+  outline-offset: 2px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.app-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: pre-line;
+  margin: 0 0 12px;
+}
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.tab {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 6px 6px 0 0;
+}
+.tab { color: var(--text); }
+.tab:hover { background: var(--surface-hover); }
+.tab.active {
+  background: var(--bg);
+  border-color: var(--border);
+  position: relative;
+  top: 1px;
+}
+main { padding: 16px 24px; }
+.view { display: none; }
+.view.active { display: block; }
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.controls label { display: inline-flex; align-items: center; gap: 6px; }
+.controls select, .controls input, .controls button {
+  font-size: 13px;
+  padding: 4px 6px;
+}
+.controls button {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.controls button:hover:not(:disabled) { background: var(--surface-hover); }
+.controls button:disabled { cursor: wait; opacity: 0.72; }
+.controls .export-button { margin-left: auto; }
+select, input, button {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+#single-date-range-wrap {
+  align-items: center;
+  gap: 12px;
+}
+#single-date-range-wrap .date-range-field {
+  align-items: center;
+  margin: 0;
+}
+#single-date-range-wrap select {
+  min-width: 11rem;
+}
+.chart {
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+}
+.chart-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+#chart-single {
+  height: auto;
+  min-height: 800px;
+  min-width: var(--single-chart-min-width);
+}
+#chart-single.narrow {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .app-header { padding: 12px 12px 0; }
+  main { padding: 12px; }
+  .controls {
+    align-items: stretch;
+    gap: 10px;
+  }
+  .controls label,
+  .controls span,
+  .controls select,
+  .controls button {
+    max-width: 100%;
+  }
+  .controls .export-button { margin-left: 0; }
+}
+
+/* Changelog view */
+.changelog {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 16px 24px;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
+  margin: 0;
+}
+
+footer#footnotes {
+  padding: 16px 24px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+footer#footnotes .footnotes-heading {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+footer#footnotes .footnotes-body {
+  white-space: pre-line;
+}
+
+/* Table view */
+#table-wrap {
+  overflow: auto;
+  max-height: calc(100vh - 240px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  position: relative;
+}
+table.bench {
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+  width: max(100%, var(--bench-table-width, 0px));
+  min-width: var(--bench-table-width, 0px);
+}
+table.bench col.test-col-w { width: 150px; }
+table.bench col.data-col-w { width: 90px; }
+table.bench th, table.bench td {
+  border: 1px solid var(--grid-border);
+  padding: 4px 8px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table.bench thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-muted);
+  z-index: 3;
+}
+table.bench th.sortable { cursor: pointer; user-select: none; }
+table.bench th.sortable:hover { background: var(--surface-hover); }
+table.bench .sort-ind { color: #aaa; font-size: 10px; margin-left: 2px; }
+table.bench .sort-ind.active { color: var(--text); }
+table.bench th.test-col, table.bench td.test-col {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--surface-muted);
+  z-index: 5;
+  isolation: isolate;
+}
+table.bench th.test-col::before, table.bench td.test-col::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  box-shadow: 1px 0 0 var(--grid-border);
+  z-index: -1;
+}
+table.bench thead th.test-col { z-index: 6; }
+table.bench td.databar {
+  position: relative;
+  background-clip: padding-box;
+}
+table.bench td.databar .bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: var(--databar);
+  z-index: 0;
+}
+table.bench td.databar .val {
+  position: relative;
+  z-index: 1;
+}
+table.bench tr.row-hl th, table.bench tr.row-hl td { background: var(--accent-soft) !important; }
+table.bench th.col-hl, table.bench td.col-hl { background: var(--accent-soft) !important; }
+table.bench tr.row-hl td.databar .bar { background: var(--databar-highlight); }
+
+#single-filter-values { min-width: 180px; }
+
+</style>
+  
+  
+</head>
+<body>
+  <header class="app-header">
+  <a href="https://benchview.hjc.im">Credits to BenchView for the website's source code</a>
+    <div class="title-bar">
+      <h1 id="chart-title">BenchView</h1>
+      <label class="dataset-picker" for="dataset-select">
+        <span class="sr-only">Benchmark dataset</span>
+        <select id="dataset-select" aria-label="Benchmark dataset"></select>
+      </label>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Theme: system" title="Theme: system">System Theme</button>
+    </div>
+    <p id="chart-description"></p>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="single" role="tab">Single Result</button>
+      <button class="tab" data-view="compare" role="tab">Compare</button>
+      <button class="tab" data-view="table" role="tab">Details Table</button>
+      <button class="tab" data-view="timeline" role="tab">Timeline</button>
+      <button class="tab" data-view="changelog" role="tab">Changelog</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Single Result View -->
+    <section id="view-single" class="view active">
+      <div class="controls">
+        <label>Data column:
+          <select id="single-data-col"></select>
+        </label>
+        <label>Color by:
+          <select id="single-color-by"></select>
+        </label>
+        <label>Sort by:
+          <select id="single-sort-by"></select>
+        </label>
+        <label>Order:
+          <select id="single-sort-order">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+          </select>
+        </label>
+        <label>Filter field:
+          <select id="single-filter-field">
+            <option value="">(none)</option>
+          </select>
+        </label>
+        <span id="single-filter-values-wrap">
+          <select id="single-filter-values" multiple size="1"></select>
+        </span>
+        <span id="single-date-range-wrap" style="display:none">
+          <label class="date-range-field" for="single-date-from">
+            <span>From</span>
+            <select id="single-date-from"></select>
+          </label>
+          <label class="date-range-field" for="single-date-to">
+            <span>To</span>
+            <select id="single-date-to"></select>
+          </label>
+        </span>
+        <button id="single-reset" type="button">Reset baseline</button>
+        <button id="single-save-png" class="export-button" type="button">Save PNG</button>
+      </div>
+      <div class="chart-scroll" tabindex="0" aria-label="Single result chart area">
+        <div id="chart-single" class="chart"></div>
+      </div>
+    </section>
+
+    <!-- Compare View -->
+    <section id="view-compare" class="view">
+      <div class="controls">
+        <label>Select tests to compare (Ctrl/Cmd+Click for multi):
+          <select id="compare-select" multiple size="10"></select>
+        </label>
+        <button id="compare-save-png" class="export-button" type="button">Save PNG</button>
+      </div>
+      <div id="chart-compare" class="chart"></div>
+    </section>
+
+    <!-- Table View -->
+    <section id="view-table" class="view">
+      <div id="table-wrap"></div>
+    </section>
+
+    <!-- Timeline View -->
+    <section id="view-timeline" class="view">
+      <div class="controls">
+        <label>Group by:
+          <select id="timeline-group-by"></select>
+        </label>
+        <label>Metric:
+          <select id="timeline-metric"></select>
+        </label>
+      </div>
+      <div id="chart-timeline" class="chart"></div>
+    </section>
+
+    <!-- Changelog View -->
+    <section id="view-changelog" class="view">
+      <pre id="changelog-content" class="changelog"></pre>
+    </section>
+  </main>
+
+
+  <footer id="footnotes"></footer>
+
+  
+  
+  
+  
+  
+  
+  
+
+  <script data-benchview-embedded-assets>
+(function () {
+  const embeddedAssets = {}
+  const nativeFetch = typeof window.fetch === 'function' ? window.fetch.bind(window) : null;
+
+  function embeddedAssetKey(input) {
+    const raw = typeof input === 'string'
+      ? input
+      : input && typeof input.url === 'string'
+        ? input.url
+        : '';
+    if (!raw) return '';
+
+    const direct = raw.split(/[?#]/, 1)[0].replace(/^\.\//, '');
+    if (Object.prototype.hasOwnProperty.call(embeddedAssets, direct)) return direct;
+
+    try {
+      const url = new URL(raw, document.baseURI);
+      const pathname = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+      const match = pathname.match(/(?:^|\/)((?:config|data)\/[^?#]+)$/);
+      if (match && Object.prototype.hasOwnProperty.call(embeddedAssets, match[1])) {
+        return match[1];
+      }
+    } catch (error) {
+      return '';
+    }
+
+    return '';
+  }
+
+  window.fetch = function benchViewEmbeddedFetch(input, init) {
+    const key = embeddedAssetKey(input);
+    if (key) {
+      const asset = embeddedAssets[key];
+      return Promise.resolve(new Response(asset.body, {
+        status: 200,
+        statusText: 'OK',
+        headers: { 'Content-Type': asset.contentType },
+      }));
+    }
+    if (!nativeFetch) return Promise.reject(new TypeError('fetch is unavailable'));
+    return nativeFetch(input, init);
+  };
+})();
+</script>
+  <script src="js/benchview.min.js">
+</script>
+</body>
+</html>

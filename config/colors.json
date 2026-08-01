@@ -1,0 +1,13 @@
+{
+  "AMD": "#ED1C24",
+  "Intel": "#0071C5",
+  "Apple": "#A2AAAD",
+  "Qualcomm": "#3253DC",
+  "Samsung": "#1428A0",
+  "NVIDIA": "#76B900",
+  "Loongson": "#B22222",
+  "Huawei": "#C7000B",
+  "MediaTek": "#FF7F50",
+  "Phytium": "#1E90FF",
+  "Xiaomi": "#FF6700"
+}
