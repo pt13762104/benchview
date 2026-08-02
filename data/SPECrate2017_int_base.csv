@@ -7,6 +7,7 @@ Dimensity 9000+ (Cortex-X2),MediaTek,2022-07,Phone,ARM64,6.97,8.83,8.07,3.61,9.5
 "Dimensity 9000+ (Cortex-A710, mcpu=cortex-x2)",MediaTek,2022-07,Phone,ARM64,5.17,6.47,6.20,2.61,8.06,13.4,4.82,5.65,17.3,2.59,6.11,3200,1.91
 "Snapdragon 730G (Cortex-A76, stock malloc)",Qualcomm,2019-04,Phone,ARM64,2.78,3.06,2.66,1.26,1.65,7.67,2.55,3.06,9.28,1.36,2.85,2208,1.29
 "Snapdragon 835 (Cortex-A73, stock malloc)",Qualcomm,2016-11,Phone,ARM64,1.78,1.94,1.85,1.08,1.41,4.27,1.54,2.65,5.96,1.18,2.03,2457,0.826
+"Rockchip RK3326 (GCC 14.2, stock malloc)",Rockchip,2018-02,IoT,ARM64,0.492,0.587,0.467,0.393,0.272,1.03,0.693,0.923,1.47,0.467,0.604,1512,0.399
 
 Footnotes
 "Important Notes"
